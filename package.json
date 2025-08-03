@@ -5,7 +5,11 @@
     "dev": "tsx watch src/server.ts"
   },
   "dependencies": {
-    "fastify": "^5.4.0"
+    "@apollo/server": "^4.12.2",
+    "@as-integrations/fastify": "^2.1.1",
+    "fastify": "^4.29.1",
+    "graphql": "^16.11.0",
+    "graphql-tag": "^2.12.6"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
