@@ -3,6 +3,7 @@ import Fastify from 'fastify'
 import { ApolloServer } from '@apollo/server'
 import fastifyApollo from '@as-integrations/fastify'
 import { typeDefs, resolvers } from './graphql/index.js'
+import { env } from './config/env.js'
 
 // Function to start the server
 async function startServer() {
@@ -16,8 +17,8 @@ async function startServer() {
 
   // try to listen the port
   try {
-    await app.listen({ port: 3000 })
-    console.log('Server running at http://localhost:3000/graphql')
+    app.listen({ port: Number(env.PORT) })
+    console.log(`Server running at http://localhost:${env.PORT}/graphql`)
   } catch (err) {
     app.log.error(err)
   }
