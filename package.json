@@ -7,9 +7,11 @@
   "dependencies": {
     "@apollo/server": "^4.12.2",
     "@as-integrations/fastify": "^2.1.1",
+    "dotenv": "^17.2.1",
     "fastify": "^4.29.1",
     "graphql": "^16.11.0",
-    "graphql-tag": "^2.12.6"
+    "graphql-tag": "^2.12.6",
+    "neo4j-driver": "^5.28.1"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",
