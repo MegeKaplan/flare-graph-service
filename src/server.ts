@@ -26,3 +26,20 @@ async function startServer() {
 
 // Start the server
 startServer()
+
+// Neo4j connection test
+import { getSession } from './database/neo4j.js';
+
+async function testNeo4j() {
+  const session = getSession()
+  try {
+    const result = await session.run('RETURN "Neo4j connection successful" AS message')
+    console.log(result.records[0]?.get('message'))
+  } finally {
+    await session.close()
+  }
+}
+
+testNeo4j().catch(err => {
+  console.error('Error connecting to Neo4j:', err)
+})
