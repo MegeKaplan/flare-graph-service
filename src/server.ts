@@ -4,6 +4,7 @@ import { ApolloServer } from '@apollo/server'
 import fastifyApollo from '@as-integrations/fastify'
 import { typeDefs, resolvers } from './graphql/index.js'
 import { env } from './config/env.js'
+import { createContext } from './graphql/context.js'
 
 // Function to start the server
 async function startServer() {
@@ -11,9 +12,15 @@ async function startServer() {
   const app = Fastify({ logger: true })
   const apollo = new ApolloServer({ typeDefs, resolvers })
 
-  // Register the Apollo server with Fastify
+  // Start the Apollo server
   await apollo.start()
-  app.register(fastifyApollo(apollo), { path: '/graphql' })
+
+  // Register the Apollo server with Fastify
+  app.register(fastifyApollo(apollo), {
+    path: '/graphql',
+    // @ts-ignore: context is not supported by the integration
+    context: async (request) => createContext(request)
+  })
 
   // try to listen the port
   try {

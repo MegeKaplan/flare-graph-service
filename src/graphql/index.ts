@@ -1,2 +1,2 @@
-export * from './typeDefs.js'
-export * from './resolvers.js'
+export * from './schema/index.js'
+export * from './resolvers/index.js'
