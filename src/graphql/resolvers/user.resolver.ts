@@ -53,6 +53,40 @@ export const userResolvers = {
         )
         return result.records.length > 0 ? result.records[0].get('user') : null
       })
+    },
+
+    // Fetch mutual follows between two users
+    mutualFollows: async (_: any, { userA, userB }: { userA: string, userB: string }) => {
+      return withSession(async (session) => {
+        const result = await session.run(
+          `
+          MATCH (x:User)
+          WHERE
+            (:User {id: $userA})-[:FOLLOWS]->(x) AND
+            (:User {id: $userB})-[:FOLLOWS]->(x)
+          RETURN x { .id } AS user
+          `,
+          { userA, userB }
+        )
+        return result.records.map((r: any) => r.get('user'))
+      })
+    },
+
+    // Fetch mutual friends between two users
+    mutualFriends: async (_: any, { userA, userB }: { userA: string, userB: string }) => {
+      return withSession(async (session) => {
+        const result = await session.run(
+          `
+          MATCH (x:User)
+          WHERE
+            (x)-[:FOLLOWS]->(:User {id: $userA}) AND (:User {id: $userA})-[:FOLLOWS]->(x) AND
+            (x)-[:FOLLOWS]->(:User {id: $userB}) AND (:User {id: $userB})-[:FOLLOWS]->(x)
+          RETURN x { .id } AS user
+          `,
+          { userA, userB }
+        )
+        return result.records.map((r: any) => r.get('user'))
+      })
     }
   },
 

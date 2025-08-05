@@ -8,6 +8,8 @@ type User {
 type Query {
   users: [User!]
   user(id: ID!): User
+  mutualFollows(userA: ID!, userB: ID!): [User!]
+  mutualFriends(userA: ID!, userB: ID!): [User!]
 }
 
 type Mutation {
