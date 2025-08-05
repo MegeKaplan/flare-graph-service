@@ -84,6 +84,32 @@ export const userResolvers = {
         )
         return true
       })
+    },
+
+    // Unfollow a user
+    unfollowUser: async (_: any, { followerId, followeeId }: { followerId: string, followeeId: string }, { principalUserId }: { principalUserId: string }) => {
+      if (!principalUserId) {
+        throw new Error('Unauthorized: You must be logged in to unfollow a user.')
+      }
+
+      if (principalUserId !== followerId) {
+        throw new Error('Unauthorized: You can only unfollow users as yourself.')
+      }
+
+      if (followerId === followeeId) {
+        throw new Error('You cannot unfollow yourself.')
+      }
+
+      return withSession(async (session) => {
+        await session.run(
+          `
+          MATCH (follower:User {id: $followerId})-[r:FOLLOWS]->(followee:User {id: $followeeId})
+          DELETE r
+          `,
+          { followerId, followeeId }
+        )
+        return true
+      })
     }
   }
 }

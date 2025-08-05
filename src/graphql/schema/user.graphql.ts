@@ -12,5 +12,6 @@ type Query {
 
 type Mutation {
   followUser(followerId: ID!, followeeId: ID!): Boolean!
+  unfollowUser(followerId: ID!, followeeId: ID!): Boolean!
 }
 `
