@@ -94,17 +94,11 @@ export const userResolvers = {
   Mutation: {
     // Follow a user
     followUser: async (_: any, { followerId, followeeId }: { followerId: string, followeeId: string }, { principalUserId }: { principalUserId: string }) => {
-      if (!principalUserId) {
-        throw new Error('Unauthorized: You must be logged in to follow a user.')
-      }
+      if (!principalUserId) throw new Error('Unauthorized: You must be logged in to follow a user.')
 
-      if (principalUserId !== followerId) {
-        throw new Error('Unauthorized: You can only follow users as yourself.')
-      }
+      if (principalUserId !== followerId) throw new Error('You can only follow users as yourself.')
 
-      if (followerId === followeeId) {
-        throw new Error('You cannot follow yourself.')
-      }
+      if (followerId === followeeId) throw new Error('You cannot follow yourself.')
 
       return withSession(async (session) => {
         await session.run(
