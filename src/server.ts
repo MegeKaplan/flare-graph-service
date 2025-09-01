@@ -24,7 +24,10 @@ async function startServer() {
 
   // try to listen the port
   try {
-    app.listen({ port: Number(env.PORT) })
+    await app.listen({
+      port: Number(env.PORT),
+      host: "0.0.0.0"
+    })
     console.log(`Server running at http://localhost:${env.PORT}/graphql`)
   } catch (err) {
     app.log.error(err)
