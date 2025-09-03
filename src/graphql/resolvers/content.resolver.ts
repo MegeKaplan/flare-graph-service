@@ -24,7 +24,7 @@ export const contentResolvers = {
     contents: async () => {
       return withSession(async (session) => {
         const result = await session.run(
-          `MATCH (c:Content) RETURN c { .id } AS content`
+          `MATCH (c:Content) RETURN c { .id, .type, .createdAt, .expiresAt } AS content`
         )
         return result.records.length > 0 ? result.records.map((record: any) => record.get('content')) : []
       })
@@ -34,7 +34,7 @@ export const contentResolvers = {
     content: async (_: any, { id }: { id: string }) => {
       return withSession(async (session) => {
         const result = await session.run(
-          `MATCH (c:Content {id: $id}) RETURN c { .id } AS content`,
+          `MATCH (c:Content {id: $id}) RETURN c { .id, .type, .createdAt, .expiresAt } AS content`,
           { id }
         )
         return result.records.length > 0 ? result.records[0].get('content') : null
@@ -44,6 +44,27 @@ export const contentResolvers = {
 
   // Mutation resolvers
   Mutation: {
+    // Create a content
+    createContent: async (_: any, { userId, contentId, type, expiresAt }: { userId: string, contentId: string, type: string, expiresAt?: string }) => {
+      if (!userId) throw new Error('Unauthorized: You must be logged in to create content.')
+
+      if (!type) type = "post"
+
+      return withSession(async (session) => {
+        const result = await session.run(
+          `
+          MERGE (c:Content {id: $contentId})
+          ON CREATE SET c.type = $type, c.createdAt = datetime(), c.expiresAt = $expiresAt
+          MERGE (u:User {id: $userId})
+          MERGE (u)-[:CREATED]->(c)
+          RETURN c { .id, .type, createdAt: toString(c.createdAt), expiresAt: toString(c.expiresAt) } AS content
+          `,
+          { userId, contentId, type, expiresAt: expiresAt || null }
+        )
+        return result.records[0].get('content')
+      })
+    },
+
     // Like a content
     likeContent: async (_: any, { userId, contentId }: { userId: string, contentId: string }, { principalUserId }: { principalUserId: string }) => {
       if (!principalUserId) throw new Error('Unauthorized: You must be logged in to like a content.')
